@@ -3,7 +3,14 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, session
 
 app = Flask(__name__)
-app.secret_key = 'super_secret_key'  # Change to a strong random secret
+app.secret_key = 'super_secret_key'  # Replace with a strong random key
+
+# ------------------------
+# Base directory
+# ------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STUDENTS_FILE = os.path.join(BASE_DIR, 'students.csv')
+RESULTS_FILE = os.path.join(BASE_DIR, 'results.csv')
 
 # ------------------------
 # Questions data
@@ -20,15 +27,15 @@ QUESTIONS = [
 # Load valid student IDs
 # ------------------------
 VALID_IDS = set()
-if os.path.isfile('students.csv'):
-    with open('students.csv', 'r', encoding='utf-8') as f:
+if os.path.isfile(STUDENTS_FILE):
+    with open(STUDENTS_FILE, 'r', encoding='utf-8') as f:
         reader = csv.reader(f)
         next(reader, None)  # skip header
         for row in reader:
             VALID_IDS.add(row[0].strip())
 
 # ------------------------
-# Home Page: Enter Student ID
+# Home Page
 # ------------------------
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -44,22 +51,19 @@ def home():
     return render_template('index.html', error=None)
 
 # ------------------------
-# Test Page: Show Questions & Handle Submission
+# Test Page
 # ------------------------
 @app.route('/test', methods=['GET', 'POST'])
 def test():
     student_id = session.get('student_id')
     if not student_id:
-        return redirect(url_for('home'))  # force student to enter ID
+        return redirect(url_for('home'))
 
-    # ------------------------
     # Prevent multiple attempts
-    # ------------------------
-    csv_file = 'results.csv'
-    if os.path.isfile(csv_file):
-        with open(csv_file, 'r', encoding='utf-8') as f:
+    if os.path.isfile(RESULTS_FILE):
+        with open(RESULTS_FILE, 'r', encoding='utf-8') as f:
             reader = csv.reader(f)
-            next(reader, None)  # skip header
+            next(reader, None)
             for row in reader:
                 if row[0] == student_id:
                     return render_template("already_submitted.html", student_id=student_id)
@@ -68,7 +72,7 @@ def test():
         return render_template("already_submitted.html", student_id=student_id)
 
     if request.method == 'POST':
-        # Grab answers from form
+        # Grab answers
         answers = {}
         for q in QUESTIONS:
             key = f'question_{q["id"]}'
@@ -76,35 +80,20 @@ def test():
             answers[q["id"]] = int(value) if value is not None else None
 
         # Calculate score
-        score = 0
-        for q in QUESTIONS:
-            if answers[q["id"]] == q["answer"]:
-                score += 1
+        score = sum(1 for q in QUESTIONS if answers[q["id"]] == q["answer"])
 
-        # -----------------------
-        # Save result to CSV
-        file_exists = os.path.isfile(csv_file)
-        with open(csv_file, 'a', newline='', encoding='utf-8') as f:
+        # Save result
+        file_exists = os.path.isfile(RESULTS_FILE)
+        with open(RESULTS_FILE, 'a', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
             if not file_exists:
-                header = ['Student ID', 'Score', 'Total', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5']
-                writer.writerow(header)
-            row_answers = []
-            for q in QUESTIONS:
-                ans = answers[q["id"]]
-                row_answers.append(q["choices"][ans] if ans is not None else "Not Answered")
+                writer.writerow(['Student ID', 'Score', 'Total'] + [f'Q{i}' for i in range(1, len(QUESTIONS)+1)])
+            row_answers = [q["choices"][answers[q["id"]]] if answers[q["id"]] is not None else "Not Answered" for q in QUESTIONS]
             writer.writerow([student_id, score, len(QUESTIONS)] + row_answers)
 
-        session['taken'] = True  # mark as taken in current session
+        session['taken'] = True
+        return render_template("result.html", name=student_id, score=score, total=len(QUESTIONS), questions=QUESTIONS, answers=answers)
 
-        return render_template("result.html",
-                               name=student_id,
-                               score=score,
-                               total=len(QUESTIONS),
-                               questions=QUESTIONS,
-                               answers=answers)
-
-    # GET request: show questions
     return render_template("test.html", name=student_id, questions=QUESTIONS)
 
 # ------------------------
