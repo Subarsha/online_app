@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Online Test - Start</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      background: linear-gradient(to right, #2563eb, #3b82f6); 
+      color: white; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      height: 100vh; 
+      margin: 0;
+    }
+    .card {
+      background: white;
+      color: black;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 350px;
+    }
+    h1 { margin-top: 0; margin-bottom: 20px; }
+    input[type=text] {
+      width: 100%;
+      padding: 12px;
+      margin: 12px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    .error { color: red; margin-top: 8px; font-size: 14px; }
+    p.note { font-size: 14px; color: #555; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Online Test</h1>
+    <form method="post">
+      <input type="text" name="student_id" placeholder="Enter Your Student ID">
+      <button type="submit">Start Test</button>
+      {% if error %}
+      <div class="error">{{ error }}</div>
+      {% endif %}
+      <p class="note">Use your unique student ID. You can only take the test once.</p>
+    </form>
+  </div>
+</body>
+</html>

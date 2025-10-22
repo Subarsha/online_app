@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Online Test</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f3f4f6;
+      margin: 0;
+      padding: 20px;
+    }
+    .card {
+      max-width: 900px;
+      margin: 20px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    h2 { margin-top: 0; }
+    .timer {
+      float: right;
+      font-weight: 700;
+      font-size: 18px;
+      color: #dc2626;
+    }
+    .question {
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      background: #fefefe;
+    }
+    .choices label {
+      display: block;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: 0;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div>
+      <h2>Welcome, {{ name }}!</h2>
+      <div class="timer" id="timer">30:00</div>
+    </div>
+
+    <form id="testForm" method="post">
+      {% for q in questions %}
+      <div class="question">
+        <strong>Q{{ loop.index }}. {{ q.text }}</strong>
+        <div class="choices">
+          {% for choice in q.choices %}
+          <label>
+            <input type="radio" name="question_{{ q.id }}" value="{{ loop.index0 }}">
+            {{ choice }}
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+
+      <button type="submit">Submit Test</button>
+    </form>
+  </div>
+
+  <script>
+    let totalSeconds = 30*60; // 30 minutes
+    const timerElement = document.getElementById('timer');
+    const form = document.getElementById('testForm');
+
+    function updateTimer() {
+      let minutes = Math.floor(totalSeconds / 60);
+      let seconds = totalSeconds % 60;
+      if(minutes < 10) minutes = "0" + minutes;
+      if(seconds < 10) seconds = "0" + seconds;
+      timerElement.textContent = minutes + ":" + seconds;
+
+      if(totalSeconds <= 0) {
+        alert("Time's up! Your test will be submitted automatically.");
+        const inputs = document.querySelectorAll('input[type=radio]');
+        inputs.forEach(i => i.disabled = true);
+        form.submit();
+      }
+      totalSeconds--;
+    }
+
+    setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>

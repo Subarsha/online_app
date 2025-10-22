@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Test Result</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f3f4f6;
+      margin: 0;
+      padding: 20px;
+    }
+    .card {
+      max-width: 900px;
+      margin: 20px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    h2 { margin-top: 0; margin-bottom: 20px; }
+    .score {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+    .question {
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      background: #fefefe;
+    }
+    .correct { color: green; font-weight: bold; }
+    .wrong { color: red; font-weight: bold; }
+    .answers { margin-top: 8px; }
+    .answers span { display: block; margin-bottom: 4px; }
+    a.button {
+      display: inline-block;
+      margin-top: 20px;
+      background: #2563eb;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+    a.button:hover { background: #1d4ed8; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Result for {{ name }}</h2>
+    <div class="score"><strong>Score:</strong> {{ score }} / {{ total }}</div>
+
+    {% for q in questions %}
+      <div class="question">
+        <strong>Q{{ loop.index }}. {{ q.text }}</strong>
+        <div class="answers">
+          <span>Your answer: 
+            {% if answers[q.id] is not none %}
+              {{ q.choices[answers[q.id]] }}
+              {% if answers[q.id] == q.answer %}
+                <span class="correct">✔ Correct</span>
+              {% else %}
+                <span class="wrong">✖ Wrong</span>
+              {% endif %}
+            {% else %}
+              <span class="wrong">Not Answered</span>
+            {% endif %}
+          </span>
+          <span>Correct answer: {{ q.choices[q.answer] }}</span>
+        </div>
+      </div>
+    {% endfor %}
+
+    <a class="button" href="{{ url_for('home') }}">Back to Home</a>
+  </div>
+</body>
+</html>

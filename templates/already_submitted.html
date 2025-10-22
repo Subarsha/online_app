@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Test Already Submitted</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      background: linear-gradient(to right, #f87171, #ef4444); /* red gradient */
+      color: white; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      height: 100vh; 
+      margin: 0;
+    }
+    .card {
+      background: white;
+      color: black;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 400px;
+    }
+    h1 { margin-top: 0; margin-bottom: 20px; }
+    p { font-size: 16px; color: #333; }
+    a.button {
+      display: inline-block;
+      margin-top: 20px;
+      background: #2563eb;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+    a.button:hover { background: #1d4ed8; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Oops!</h1>
+    <p>Student ID <strong>{{ student_id }}</strong> has already submitted the test.</p>
+    <p>You cannot take the test again.</p>
+    <a class="button" href="{{ url_for('home') }}">Go Back to Home</a>
+  </div>
+</body>
+</html>
